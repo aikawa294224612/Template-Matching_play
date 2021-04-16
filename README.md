@@ -247,4 +247,5 @@ for ht in range(h_times):
 ![png](image/output_15_4.png)
     
 
-
+### References:
+1. 特徵匹配 (Template Matching): https://medium.com/@bkwtwn/%E7%89%B9%E5%BE%B5%E5%8C%B9%E9%85%8D-template-matching-f2de49998dcc
