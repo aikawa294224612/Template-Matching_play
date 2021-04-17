@@ -1,6 +1,8 @@
 # Template-Matching_play
 玩陽春Template Matching，sliding window方法
 
+medium: https://yellowgirl3614.medium.com/template-matching-sliding-window-90f3941e3c4f
+
 ```python
 import os
 import cv2
