@@ -28,7 +28,7 @@ plt.imshow(img)
 
 
 
-    <matplotlib.image.AxesImage at 0x23513f12908>
+    <matplotlib.image.AxesImage at 0x2359129b608>
 
 
 
@@ -47,7 +47,7 @@ plt.imshow(temp_img)
 
 
 
-    <matplotlib.image.AxesImage at 0x23513905bc8>
+    <matplotlib.image.AxesImage at 0x235912eaa48>
 
 
 
@@ -111,30 +111,28 @@ def cos_simiarity(a1, a2):
 
 
 ```python
-w = temp_img.shape[0]
-h = temp_img.shape[1]
+w = temp_img.shape[1]
+h = temp_img.shape[0]
 
 img_size = img.shape[0]
-
-# print(w, h)
 
 w_times = img_size-w+1
 h_times = img_size-h+1
 
 for ht in range(h_times):
     for t in range(w_times):
-        part_img = np.matrix.flatten(img[t:t+w, ht:ht+h])
+        part_img = np.matrix.flatten(img[ht:ht+h, t:t+w])
         part_temp = np.matrix.flatten(temp_img)
         
         cos = cos_simiarity(part_img, part_temp)
         # print(cos)
         if cos >= 0.999:
-            plt.imshow(img[t:t+w, ht:ht+h])
+            plt.imshow(img[ht:ht+h, t:t+w])
             print('[{w_from}:{w_to}, {h_from}:{h_to}]'.format(w_from = str(t), w_to = str(t+w),
                                                              h_from = str(ht), h_to = str(ht+h)))
 ```
 
-    [95:165, 92:163]
+    [92:163, 95:165]
     
 
 
@@ -143,8 +141,26 @@ for ht in range(h_times):
     
 
 
+
+```python
+img_copy = np.copy(img)
+cv2.rectangle(img_copy, pt1=(92,95), pt2=(164, 166), color=(255, 0, 0), thickness=2)
+plt.imshow(img_copy)
+plt.show()
+```
+
+    Clipping input data to the valid range for imshow with RGB data ([0..1] for floats or [0..255] for integers).
+    
+
+
+    
+![png](image/output_11_1.png)
+    
+
+
 ### 用cosine similarity去找相似效果不佳，他會去找到總和相近的，但位置可能差很多，例如:
 ![img](https://imgur.com/VSpYfdk.png)
+
 使用cossimi_match的結果
 
 
@@ -162,10 +178,10 @@ def cossimi_match(a1, a2):
 ```python
 def template_match2(a1, a2):
     sim = np.sum(a1-a2)
-    if sim < 3 and sim > 0:
+    if sim < 2.6 and sim > 0:
         print(sim)
         return True
-    else:
+    else
         return False
 ```
 
@@ -184,55 +200,9 @@ plt.imshow(img2)
 
 
 
-    <matplotlib.image.AxesImage at 0x23513d55108>
+    <matplotlib.image.AxesImage at 0x2359178a308>
 
 
-
-
-    
-![png](image/output_14_2.png)
-    
-
-
-
-```python
-w = temp_img.shape[0]
-h = temp_img.shape[1]
-
-img_size_w = img2.shape[0]
-img_size_h = img2.shape[1]
-
-# print(w, h)
-
-w_times = img_size_w-w+1
-h_times = img_size_h-h+1
-
-plt.figure(figsize=(10,5))
-i = 1
-
-for ht in range(h_times):
-    for t in range(w_times):
-        part_img = np.matrix.flatten(img2[t:t+w, ht:ht+h])
-        part_temp = np.matrix.flatten(temp_img)
-        
-        cos = template_match2(part_img, part_temp)
-        # print(cos)
-        if cos:
-            # plt.subplot(10, 5, i)
-            plt.imshow(img2[t:t+w, ht:ht+h])
-            print('[{w_from}:{w_to}, {h_from}:{h_to}]'.format(w_from = str(t), w_to = str(t+w),
-                                                             h_from = str(ht), h_to = str(ht+h)))
-            i+=1
-        plt.show()
-```
-
-
-    <Figure size 720x360 with 0 Axes>
-
-
-    2.698059
-    [71:141, 63:134]
-    
 
 
     
@@ -240,13 +210,101 @@ for ht in range(h_times):
     
 
 
+
+```python
+w = temp_img.shape[1]
+h = temp_img.shape[0]
+
+img_size_w = img2.shape[1]
+img_size_h = img2.shape[0]
+
+w_times = img_size_w-w+1
+h_times = img_size_h-h+1
+```
+
+
+```python
+for ht in range(h_times):
+    for t in range(w_times):
+        part_img = np.matrix.flatten(img2[ht:ht+h, t:t+w])
+        part_temp = np.matrix.flatten(temp_img)
+        
+        cos = template_match2(part_img, part_temp)
+        # print(cos)
+        if cos:
+            # plt.subplot(10, 5, i)
+            plt.imshow(img2[ht:ht+h, t:t+w])
+            print('[{w_from}:{w_to}, {h_from}:{h_to}]'.format(w_from = str(t), w_to = str(t+w),
+                                                             h_from = str(ht), h_to = str(ht+h)))
+            i+=1
+        plt.show()
+```
+
     2.5137634
-    [77:147, 73:144]
+    [73:144, 77:147]
     
 
 
     
-![png](image/output_15_4.png)
+![png](image/output_17_1.png)
+    
+
+
+### 使用平方差
+
+
+```python
+def template_match_meansqare(a1, a2):
+    sim = np.sum(np.square(a1)-np.square(a2))
+    if sim < 1.0 and sim > 0:
+        print(sim)
+        return True
+    else:
+        return False
+```
+
+
+```python
+for ht in range(h_times):
+    for t in range(w_times):
+        part_img = np.matrix.flatten(img2[ht:ht+h, t:t+w])
+        part_temp = np.matrix.flatten(temp_img)
+        
+        cos = template_match_meansqare(part_img, part_temp)
+        # print(cos)
+        if cos:
+            # plt.subplot(10, 5, i)
+            plt.imshow(img2[ht:ht+h, t:t+w])
+            print('[{w_from}:{w_to}, {h_from}:{h_to}]'.format(w_from = str(t), w_to = str(t+w),
+                                                             h_from = str(ht), h_to = str(ht+h)))
+            i+=1
+        plt.show()
+```
+
+    0.7698059
+    [63:134, 71:141]
+    
+
+
+    
+![png](image/output_20_1.png)
+    
+
+
+
+```python
+img_copy2 = np.copy(img2)
+cv2.rectangle(img_copy2, pt1=(63,71), pt2=(134, 141), color=(255, 0, 0), thickness=2)
+plt.imshow(img_copy2)
+plt.show()
+```
+
+    Clipping input data to the valid range for imshow with RGB data ([0..1] for floats or [0..255] for integers).
+    
+
+
+    
+![png](image/output_21_1.png)
     
 
 ### References:
